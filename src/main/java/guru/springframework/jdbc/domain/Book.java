@@ -4,7 +4,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import java.util.Objects;
+
+@NamedQueries({
+        @NamedQuery(name="book_find_all", query = "From Book"),
+        @NamedQuery(name="find_by_title", query = "From Book b WHERE b.title = :title"),
+})
 
 @Entity
 public class Book {

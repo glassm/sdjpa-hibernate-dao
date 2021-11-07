@@ -4,6 +4,7 @@ import guru.springframework.jdbc.dao.AuthorDao;
 import guru.springframework.jdbc.dao.BookDao;
 import guru.springframework.jdbc.domain.Author;
 import guru.springframework.jdbc.domain.Book;
+import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -28,6 +29,34 @@ public class DaoIntegrationTest {
 
     @Autowired
     BookDao bookDao;
+
+    @Test
+    void testFindAllAuthors() {
+        List<Author> authors = authorDao.findAll();
+
+        assertThat(authors).isNotNull();
+        assertThat(authors.size()).isGreaterThan(0);
+    }
+
+    @Test
+    void testFindAllBooks() {
+        List<Book> books = bookDao.findAll();
+
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isGreaterThan(0);
+    }
+
+    @Test
+    void testFindBookByISBN() {
+        Book book = new Book();
+        book.setIsbn("1234" + RandomString.make());
+        book.setTitle("ISBN TEST");
+
+        Book saved = bookDao.saveNewBook(book);
+
+        Book fetched = bookDao.findByISBN(book.getIsbn());
+        assertThat(fetched).isNotNull();
+    }
 
     @Test
     void testListAuthorByLastNameLike() {
@@ -154,11 +183,31 @@ public class DaoIntegrationTest {
     }
 
     @Test
+    void testGetBookByTitle() {
+        Book book = bookDao.findBookByTitle("Domain-Driven Design");
+
+        assertThat(book).isNotNull();
+    }
+
+    @Test
     void testGetAuthor() {
 
         Author author = authorDao.getById(1L);
 
         assertThat(author).isNotNull();
 
+    }
+
+    @Test
+    void testGetAuthorByNameCriteria() {
+        Author author = authorDao.findAuthorByNameCriteria("Craig", "Walls");
+        assertThat(author).isNotNull();
+    }
+
+    @Test
+    void testGetAuthorByNameNative() {
+        Author author = authorDao.findAuthorByNameNative("Craig", "Walls");
+
+        assertThat(author).isNotNull();
     }
 }
